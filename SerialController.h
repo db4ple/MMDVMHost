@@ -66,6 +66,7 @@ private:
 	bool           m_readPending;
 #else
 	int            m_fd;
+	int            m_fdOut;
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)

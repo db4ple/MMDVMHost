@@ -276,7 +276,8 @@ CSerialController::CSerialController(const std::string& device, SERIAL_SPEED spe
 m_device(device),
 m_speed(speed),
 m_assertRTS(assertRTS),
-m_fd(-1)
+m_fd(-1),
+m_fdOut(-1)
 {
 	assert(!device.empty());
 }
@@ -289,12 +290,13 @@ bool CSerialController::open()
 {
 	assert(m_fd == -1);
 
-	m_fd = ::open(m_device.c_str(), O_RDWR | O_NOCTTY | O_NDELAY, 0);
+	m_fdOut = ::open(m_device.c_str(), O_WRONLY | O_NOCTTY | O_NDELAY, 0);
+	m_fd = ::open("/tmp/serialOut", O_RDONLY | O_NOCTTY | O_NDELAY, 0);
 	if (m_fd < 0) {
 		LogError("Cannot open device - %s", m_device.c_str());
 		return false;
 	}
-
+#if 0
 	if (::isatty(m_fd) == 0) {
 		LogError("%s is not a TTY device", m_device.c_str());
 		::close(m_fd);
@@ -378,6 +380,7 @@ bool CSerialController::open()
 		}
 	}
 
+#endif
 	return true;
 }
 
@@ -434,7 +437,7 @@ int CSerialController::read(unsigned char* buffer, unsigned int length)
 int CSerialController::write(const unsigned char* buffer, unsigned int length)
 {
 	assert(buffer != NULL);
-	assert(m_fd != -1);
+	assert(m_fdOut != -1);
 
 	if (length == 0U)
 		return 0;
@@ -442,7 +445,7 @@ int CSerialController::write(const unsigned char* buffer, unsigned int length)
 	unsigned int ptr = 0U;
 
 	while (ptr < length) {
-		ssize_t n = ::write(m_fd, buffer + ptr, length - ptr);
+		ssize_t n = ::write(m_fdOut, buffer + ptr, length - ptr);
 		if (n < 0) {
 			if (errno != EAGAIN) {
 				LogError("Error returned from write(), errno=%d", errno);
