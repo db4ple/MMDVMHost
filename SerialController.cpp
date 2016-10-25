@@ -290,8 +290,8 @@ bool CSerialController::open()
 {
 	assert(m_fd == -1);
 
+	m_fd = ::open("/opt/dmr/serialOut", O_RDONLY | O_NOCTTY | O_NDELAY, 0);
 	m_fdOut = ::open(m_device.c_str(), O_WRONLY | O_NOCTTY | O_NDELAY, 0);
-	m_fd = ::open("/tmp/serialOut", O_RDONLY | O_NOCTTY | O_NDELAY, 0);
 	if (m_fd < 0) {
 		LogError("Cannot open device - %s", m_device.c_str());
 		return false;
