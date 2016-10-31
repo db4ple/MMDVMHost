@@ -68,6 +68,8 @@ void DMRAccessControl::init(const std::vector<unsigned int>& dstIdBlacklistSlot1
 	m_tgRewriteSlot2       = tgRewriteSlot2;
 	m_bmAutoRewrite	       = bmAutoRewrite;
 	m_bmRewriteReflectorVoicePrompts = bmRewriteReflectorVoicePrompts;
+	m_selfOnly = selfOnly;
+	m_id = id;
 }
  
 bool DMRAccessControl::dstIdBlacklist(unsigned int did, unsigned int slot, bool network)
@@ -198,6 +200,7 @@ bool DMRAccessControl::validateAccess(unsigned int src_id, unsigned int dst_id, 
 		LogMessage("DMR Slot %u, invalid access attempt to TG%u (TG not in whitelist)", slot, dst_id);
 		return false;
 	} else {
+		// LogMessage("DMR Slot %u, access from %u to %d (network = %d, selfOnly = %d)", slot, src_id, dst_id, network, m_selfOnly);
 		return true;
 	}
 }
